@@ -1,21 +1,22 @@
 from tokens import *
-import matplotlib
-matplotlib.use("Agg") # has to be before any other matplotlibs imports to set a "headless" backend
-import matplotlib.pyplot as plt
 import psutil
 from datetime import datetime
 from subprocess import Popen, PIPE, STDOUT
 import operator
 import collections
-# import sys
+import sys
 import time
-# import threading
-# import random
+import threading
+import random
 import telepot
 # from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardHide, ForceReply
 # from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 # from telepot.namedtuple import InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent
-
+sys.path.append('./monitor')
+import ManageMonItem
+import Monitoring
+sys.path.append('./scanner')
+import Scanner
 
 
 memorythreshold = 85  # If memory usage more this %
@@ -39,23 +40,6 @@ def clearall(chat_id):
         settingmemth.remove(chat_id)
     if chat_id in setpolling:
         setpolling.remove(chat_id)
-
-def plotmemgraph(memlist, xaxis, tmperiod):
-    # print(memlist)
-    # print(xaxis)
-    plt.xlabel(tmperiod)
-    plt.ylabel('% Used')
-    plt.title('Memory Usage Graph')
-    plt.text(0.1*len(xaxis), memorythreshold+2, 'Threshold: '+str(memorythreshold)+ ' %')
-    memthresholdarr = []
-    for xas in xaxis:
-        memthresholdarr.append(memorythreshold)
-    plt.plot(xaxis, memlist, 'b-', xaxis, memthresholdarr, 'r--')
-    plt.axis([0, len(xaxis)-1, 0, 100])
-    plt.savefig('/tmp/graph.png')
-    plt.close()
-    f = open('/tmp/graph.png', 'rb')  # some file on local disk
-    return f
 
 
 class YourBot(telepot.Bot):
@@ -108,42 +92,21 @@ class YourBot(telepot.Bot):
                 elif msg['text'] == "Stop":
                     clearall(chat_id)
                     bot.sendMessage(chat_id, "All operations stopped.", reply_markup=hide_keyboard)
-                elif msg['text'] == '/setpoll' and chat_id not in setpolling:
-                    bot.sendChatAction(chat_id, 'typing')
-                    setpolling.append(chat_id)
-                    bot.sendMessage(chat_id, "Send me a new polling interval in seconds? (higher than 10)", reply_markup=stopmarkup)
-                elif chat_id in setpolling:
-                    bot.sendChatAction(chat_id, 'typing')
-                    try:
-                        global poll
-                        poll = int(msg['text'])
-                        if poll > 10:
-                            bot.sendMessage(chat_id, "All set!")
-                            clearall(chat_id)
-                        else:
-                            1/0
-                    except:
-                        bot.sendMessage(chat_id, "Please send a proper numeric value higher than 10.")
                 elif msg['text'] == "/shell" and chat_id not in shellexecution:
                     bot.sendMessage(chat_id, "Send me a shell command to execute", reply_markup=stopmarkup)
                     shellexecution.append(chat_id)
-                elif msg['text'] == "/setmem" and chat_id not in settingmemth:
-                    bot.sendChatAction(chat_id, 'typing')
-                    settingmemth.append(chat_id)
-                    bot.sendMessage(chat_id, "Send me a new memory threshold to monitor?", reply_markup=stopmarkup)
-                elif chat_id in settingmemth:
-                    bot.sendChatAction(chat_id, 'typing')
-                    try:
-                        global memorythreshold
-                        memorythreshold = int(msg['text'])
-                        if memorythreshold < 100:
-                            bot.sendMessage(chat_id, "All set!")
-                            clearall(chat_id)
-                        else:
-                            1/0
-                    except:
-                        bot.sendMessage(chat_id, "Please send a proper numeric value below 100.")
-
+                elif msg['text'] == "/madd" and chat_id not in shellexecution:
+                    ManageMonItem.addMonitorItem(bot, chat_id)
+                elif msg['text'] == "/mdel" and chat_id not in shellexecution:
+                    ManageMonItem.deleteMonitorItem(bot, chat_id)
+                elif msg['text'] == "/medit" and chat_id not in shellexecution:
+                    ManageMonItem.editMonitorItem(bot, chat_id)
+                elif msg['text'] == "/mstart" and chat_id not in shellexecution:
+                    Monitoring.startMonitorItems(bot, chat_id)
+                elif msg['text'] == "/mstop" and chat_id not in shellexecution:
+                    Monitoring.stopMonitorItems(bot, chat_id)
+                elif msg['text'] == "/sscan" and chat_id not in shellexecution:
+                    Scanner.startScanItem(bot, chat_id)
                 elif chat_id in shellexecution:
                     bot.sendChatAction(chat_id, 'typing')
                     p = Popen(msg['text'], shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
@@ -152,10 +115,8 @@ class YourBot(telepot.Bot):
                         bot.sendMessage(chat_id, output, disable_web_page_preview=True)
                     else:
                         bot.sendMessage(chat_id, "No output.", disable_web_page_preview=True)
-                elif msg['text'] == '/memgraph':
-                    bot.sendChatAction(chat_id, 'typing')
-                    tmperiod = "Last %.2f hours" % ((datetime.now() - graphstart).total_seconds() / 3600)
-                    bot.sendPhoto(chat_id, plotmemgraph(memlist, xaxis, tmperiod))
+                
+                    
 
 
 
@@ -189,6 +150,5 @@ while 1:
             tmperiod = "Last %.2f hours" % ((graphend - graphstart).total_seconds() / 3600)
             for adminid in adminchatid:
                 bot.sendMessage(adminid, "CRITICAL! LOW MEMORY!\n" + memavail)
-                bot.sendPhoto(adminid, plotmemgraph(memlist, xaxis, tmperiod))
     time.sleep(10)  # 10 seconds
     tr += 10
