@@ -9,6 +9,10 @@ import time
 import threading
 import random
 import telepot
+import socket
+import requests
+import pymysql
+
 # from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardHide, ForceReply
 # from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 # from telepot.namedtuple import InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent

@@ -7,3 +7,25 @@ services:
     container_name: python-app
     volumes: 
       - ./servman:/home/worker/servman
+    environment: 
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_HOST: db
+
+  db:
+    image: mysql:5.7
+    container_name: python-db
+    environment: 
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - proz_db_volume:/var/lib/mysql
+
+  
+
+volumes:
+  proz_db_volume:
