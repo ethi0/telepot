@@ -22,14 +22,13 @@ import ManageMonItem
 import Monitoring
 sys.path.append('./scanner')
 import Scanner
-
+sys.path.append('./selfmonitor')
+import Battery
+import Cpu
+import Disk
 
 memorythreshold = 85  # If memory usage more this %
-poll = 60  # seconds
-power_flag_s1 = 0
-power_flag_s2 = 0
-power_plug_flag = 0
-power_charge_flag = 0
+poll = 10  # seconds
 
 shellexecution = []
 timelist = []
@@ -149,64 +148,6 @@ class YourBot(telepot.Bot):
                         bot.sendMessage(chat_id, output, disable_web_page_preview=True)
                     else:
                         bot.sendMessage(chat_id, "No output.", disable_web_page_preview=True)
-                
-                    
-
-    def battery_mon(self):
-        battery = psutil.sensors_battery()
-        battenergy = battery.percent
-        battcharge = battery.power_plugged
-        batttime = battery.secsleft / 60
-        global power_flag_s1
-        global power_flag_s2
-        global power_plug_flag
-        global power_charge_flag
-        if str(battcharge) == str(False) and float(battenergy) > 75.0:
-            if power_flag_s1 == 0:
-                power_flag_s1 = 1
-                power_flag_s2 = 0
-                for adminid in adminchatid:
-                    bot.sendMessage(adminid, "Power Unplugged!")
-        elif str(battcharge) == str(False) and \
-            ((float(batttime) < 75.0 and float(batttime) > 30.0) or (float(battenergy) <= 75.0 and float(battenergy) >= 30.0)):
-            if power_flag_s2 == 0:
-                power_flag_s1 = 0
-                power_flag_s2 = 1
-                for adminid in adminchatid:
-                    bot.sendMessage(adminid, "Power Unplugged! " + "\n" + \
-                        "Battery Energy is " \
-                        + "%.2f percents." % float(battenergy) + "\n" + "%.2f  minutes left!" % float(batttime))
-        elif str(battcharge) == str(False) and float(batttime) < 30.0:
-            power_flag_s1 = 0
-            power_flag_s2 = 0
-            for adminid in adminchatid:
-                bot.sendMessage(adminid, "Power Unplugged!" + "\n" + \
-                    "BATTERY CRITICAL: " + "%.2f percents." % float(battenergy) \
-                     + "\n" +"%.2f minutes left!" % float(batttime))
-        elif str(battcharge) == str(True) and float(battenergy) < 100.0 and power_plug_flag == 0:
-            power_plug_flag = 1
-            power_charge_flag = 0
-            for adminid in adminchatid:
-                bot.sendMessage(adminid, "Power Plugged!")
-        elif str(battcharge) == str(True) and float(battenergy) == 100.0 and power_charge_flag == 0:
-            power_charge_flag = 1
-            for adminid in adminchatid:
-                bot.sendMessage(adminid, "Battery is fully charged and on powerline!")
-
-
-    def disk_mon(self):
-        disk = psutil.disk_usage('/')
-        diskused = disk.percent
-        if diskused > 75.0:
-            for adminid in adminchatid:
-                bot.sendMessage(adminid, "Disk usage is " + diskused + "!")
-            
-    def cpu_mon(self):
-        temperature = psutil.sensors_temperatures()
-        cputemp = temperature.get('coretemp')[0][1]
-        if cputemp > 70.0:
-            for adminid in adminchatid:
-                bot.sendMessage(adminid, "CPU Temperature is " + cputemp + " !")
 
 
 TOKEN = telegrambot
@@ -217,6 +158,8 @@ tr = 0
 xx = 0
 for adminid in adminchatid:
     bot.sendMessage(adminid, "ALL SYSTEMS ARE ONLINE.")
+Battery.battery_mon(bot, adminchatid)
+
 # Keep the program running.
 while 1:
     if tr == poll:
@@ -225,9 +168,9 @@ while 1:
         memck = psutil.virtual_memory()
         mempercent = memck.percent
         loadavg = os.getloadavg()
-        bot.battery_mon()
-        bot.disk_mon()
-        bot.cpu_mon()
+        Battery.battery_mon(bot, adminchatid)
+        Cpu.cpu_mon(bot, adminchatid)
+        Disk.disk_mon(bot, adminchatid)
         if len(memlist) > 300:
             memq = collections.deque(memlist)
             memq.append(mempercent)
