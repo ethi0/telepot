@@ -28,7 +28,7 @@ import Cpu
 import Disk
 
 memorythreshold = 85  # If memory usage more this %
-poll = 10  # seconds
+poll = 60  # seconds
 
 shellexecution = []
 timelist = []
@@ -158,7 +158,8 @@ tr = 0
 xx = 0
 for adminid in adminchatid:
     bot.sendMessage(adminid, "ALL SYSTEMS ARE ONLINE.")
-Battery.battery_mon(bot, adminchatid)
+Battery.monitor(bot, adminchatid)
+Cpu.loadMonitor(bot, adminchatid)
 
 # Keep the program running.
 while 1:
@@ -168,9 +169,9 @@ while 1:
         memck = psutil.virtual_memory()
         mempercent = memck.percent
         loadavg = os.getloadavg()
-        Battery.battery_mon(bot, adminchatid)
-        Cpu.cpu_mon(bot, adminchatid)
-        Disk.disk_mon(bot, adminchatid)
+        Battery.monitor(bot, adminchatid)
+        Cpu.heatMonitor(bot, adminchatid)
+        Disk.monitor(bot, adminchatid)
         if len(memlist) > 300:
             memq = collections.deque(memlist)
             memq.append(mempercent)

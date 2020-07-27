@@ -5,7 +5,7 @@ power_flag_s2 = 0
 power_plug_flag = 0
 power_charge_flag = 0
 
-def battery_mon(bot, adminchatid):
+def monitor(bot, adminchatid):
     battery = psutil.sensors_battery()
     battenergy = battery.percent
     battcharge = battery.power_plugged

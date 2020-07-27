@@ -1,6 +1,6 @@
 import psutil
 
-def disk_mon(bot, adminchatid):
+def monitor(bot, adminchatid):
     disk = psutil.disk_usage('/')
     diskused = disk.percent
     if float(diskused) > 75.0:
