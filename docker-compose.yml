@@ -7,6 +7,7 @@ services:
     container_name: python-app
     volumes: 
       - ./servman:/home/worker/servman
+      - ./shared/etc/ssh:/root/.ssh
     environment: 
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
