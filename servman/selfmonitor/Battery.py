@@ -6,10 +6,17 @@ power_plug_flag = 0
 power_charge_flag = 0
 
 def monitor(bot, adminchatid):
-    battery = psutil.sensors_battery()
-    battenergy = battery.percent
-    battcharge = battery.power_plugged
-    batttime = battery.secsleft / 60
+    while True:
+        try:
+            battery = psutil.sensors_battery()
+            battenergy = battery.percent
+            battcharge = battery.power_plugged
+            batttime = battery.secsleft / 60
+        except AttributeError:
+            for adminid in adminchatid:
+                bot.sendMessage(adminid, "There is an error while getting battery.percent value! Retrying...")
+            break
+
     global power_flag_s1
     global power_flag_s2
     global power_plug_flag
@@ -19,6 +26,7 @@ def monitor(bot, adminchatid):
             power_flag_s1 = 1
             power_flag_s2 = 0
             power_plug_flag = 0
+            power_charge_flag = 0
             for adminid in adminchatid:
                 bot.sendMessage(adminid, "Power Unplugged!")
     elif str(battcharge) == str(False) and \
@@ -27,6 +35,7 @@ def monitor(bot, adminchatid):
             power_flag_s1 = 0
             power_flag_s2 = 1
             power_plug_flag = 0
+            power_charge_flag = 0
             for adminid in adminchatid:
                 bot.sendMessage(adminid, "Power Unplugged! " + "\n" +
                     "Battery Energy is "

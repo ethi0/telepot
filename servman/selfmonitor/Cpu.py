@@ -9,7 +9,7 @@ def heatMonitor(bot, adminchatid):
     global heat_flag
     temperature = psutil.sensors_temperatures()
     cputemp = temperature.get('coretemp')[0][1]
-    if float(cputemp) > 70.0:
+    if float(cputemp) > 49.0:
         for adminid in adminchatid:
             bot.sendMessage(adminid, "CPU Temperature is %.2f !" %
                             float(cputemp))
