@@ -26,9 +26,10 @@ sys.path.append('./selfmonitor')
 import Battery
 import Cpu
 import Disk
+import SelfMonitorMicrocore
 
 memorythreshold = 85  # If memory usage more this %
-poll = 60  # seconds
+poll = 5  # seconds
 
 shellexecution = []
 timelist = []
@@ -157,10 +158,9 @@ bot.message_loop()
 tr = 0
 xx = 0
 for adminid in adminchatid:
-    bot.sendMessage(adminid, "ALL SYSTEMS ARE ONLINE.")
-Battery.monitor(bot, adminchatid)
-Cpu.loadMonitor(bot, adminchatid)
-
+    bot.sendMessage(adminid, "ALL SYSTEMS ARE ONLINE." + "\n" \
+        + "Initializing first-time check...")
+SelfMonitorMicrocore.Reporter(bot, adminchatid)
 # Keep the program running.
 while 1:
     if tr == poll:
@@ -168,10 +168,7 @@ while 1:
         timenow = datetime.now()
         memck = psutil.virtual_memory()
         mempercent = memck.percent
-        loadavg = os.getloadavg()
-        Battery.monitor(bot, adminchatid)
-        Cpu.heatMonitor(bot, adminchatid)
-        Disk.monitor(bot, adminchatid)
+        SelfMonitorMicrocore.Reporter(bot, adminchatid)
         if len(memlist) > 300:
             memq = collections.deque(memlist)
             memq.append(mempercent)
