@@ -1,4 +1,6 @@
 import psutil
+import time
+from retry import retry
 
 power_flag_s1 = 0
 power_flag_s2 = 0
@@ -6,18 +8,32 @@ power_plug_flag = 0
 power_charge_flag = 0
 result_battery = ""
 
-def monitor(bot, adminchatid):
-    battery = psutil.sensors_battery()
-    battcharge = battery.power_plugged
-    batttime = battery.secsleft / 60
-    while True:
-        try:
+
+@retry()
+def monitor():
+    try:
+        battery = psutil.sensors_battery()
+        if battery is None:
+            print("Maybe the power is just [dis]connected. Battery is None == True." )
+            raise AttributeError
+        else:
+            batttime = battery.secsleft / 60
             battenergy = battery.percent
-        except AttributeError:
-            for adminid in adminchatid:
-                bot.sendMessage(adminid, "[ERROR] There is an error while getting battery.percent value! Retrying...")
-        break
-    
+            battcharge = battery.power_plugged
+            print("I think it's good there:" + str(battery is None))
+    except AttributeError:
+            time.sleep(5)
+            battery = psutil.sensors_battery()
+            print("Action after catching Exception: " + str(battery is None))
+    #finally:
+    #    battery = psutil.sensors_battery()
+    #    print("Final action: " + str(battery is None))
+
+
+    #batttime = battery.secsleft / 60
+    #battenergy = battery.percent
+    #battcharge = battery.power_plugged 
+
     global power_flag_s1
     global power_flag_s2
     global power_plug_flag
@@ -42,6 +58,7 @@ def monitor(bot, adminchatid):
         power_flag_s1 = 0
         power_flag_s2 = 0
         power_plug_flag = 0
+        power_charge_flag = 0
         result_battery = str("[BAD] Power Unplugged!" + "\n" + \
             "BATTERY CRITICAL: " + \
             "%.2f percents." % float(battenergy) + \
@@ -49,9 +66,14 @@ def monitor(bot, adminchatid):
     elif str(battcharge) == str(True) and float(battenergy) < 100.0 and power_plug_flag == 0:
         power_plug_flag = 1
         power_charge_flag = 0
+        power_flag_s1 = 0
+        power_flag_s2 = 0
         result_battery = str("[OK] Power Plugged!")
     elif str(battcharge) == str(True) and float(battenergy) == 100.0 and power_charge_flag == 0:
         power_charge_flag = 1
+        power_plug_flag = 1
+        power_flag_s1 = 0
+        power_flag_s2 = 0
         result_battery = str("[OK] Battery is fully charged and on powerline!")
     else:
         result_battery = ""
