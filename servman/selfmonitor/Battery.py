@@ -1,6 +1,5 @@
 import psutil
 import time
-from retry import retry
 
 power_flag_s1 = 0
 power_flag_s2 = 0
@@ -9,22 +8,21 @@ power_charge_flag = 0
 result_battery = ""
 
 
-@retry()
 def monitor():
     try:
         battery = psutil.sensors_battery()
         if battery is None:
             print("Maybe the power is just [dis]connected. Battery is None == True." )
             raise AttributeError
-        else:
-            batttime = battery.secsleft / 60
-            battenergy = battery.percent
-            battcharge = battery.power_plugged
-            print("I think it's good there:" + str(battery is None))
     except AttributeError:
         time.sleep(5)
         battery = psutil.sensors_battery()
         print("Action after catching Exception: " + str(battery is None))
+    else:
+        batttime = battery.secsleft / 60
+        battenergy = battery.percent
+        battcharge = battery.power_plugged
+        print("I think it's good there:" + str(battery is None))
 
     global power_flag_s1
     global power_flag_s2
