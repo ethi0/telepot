@@ -22,17 +22,9 @@ def monitor():
             battcharge = battery.power_plugged
             print("I think it's good there:" + str(battery is None))
     except AttributeError:
-            time.sleep(5)
-            battery = psutil.sensors_battery()
-            print("Action after catching Exception: " + str(battery is None))
-    #finally:
-    #    battery = psutil.sensors_battery()
-    #    print("Final action: " + str(battery is None))
-
-
-    #batttime = battery.secsleft / 60
-    #battenergy = battery.percent
-    #battcharge = battery.power_plugged 
+        time.sleep(5)
+        battery = psutil.sensors_battery()
+        print("Action after catching Exception: " + str(battery is None))
 
     global power_flag_s1
     global power_flag_s2
