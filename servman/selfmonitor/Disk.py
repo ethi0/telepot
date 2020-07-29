@@ -20,5 +20,4 @@ def monitor():
         result_disk = str("[OK] Disk usage is %.2f percents!" % float(diskused))
     else:
         result_disk = ""
-    print(result_disk)
     return result_disk

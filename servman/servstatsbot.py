@@ -23,9 +23,6 @@ import Monitoring
 sys.path.append('./scanner')
 import Scanner
 sys.path.append('./selfmonitor')
-import Battery
-import Cpu
-import Disk
 import SelfMonitorMicrocore
 
 memorythreshold = 85  # If memory usage more this %

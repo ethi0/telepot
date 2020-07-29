@@ -55,5 +55,4 @@ def monitor(bot, adminchatid):
         result_battery = str("[OK] Battery is fully charged and on powerline!")
     else:
         result_battery = ""
-    print(result_battery)
     return result_battery
