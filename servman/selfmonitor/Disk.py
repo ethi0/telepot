@@ -4,7 +4,7 @@ disk_full_flag = 0
 disk_free_flag = 0
 result_disk = ""
 
-def monitor(bot, adminchatid):
+def monitor():
     global disk_free_flag
     global disk_full_flag
     global result_disk

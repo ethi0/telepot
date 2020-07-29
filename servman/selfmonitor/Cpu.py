@@ -8,7 +8,7 @@ high_load_flag = 0
 result_heat = ""
 result_load = ""
 
-def heatMonitor(bot, adminchatid):
+def heatMonitor():
     global low_heat_flag
     global high_heat_flag
     global result_heat
@@ -30,7 +30,7 @@ def heatMonitor(bot, adminchatid):
 
 
 
-def loadMonitor(bot, adminchatid):
+def loadMonitor():
     global low_load_flag
     global high_load_flag
     global result_load
