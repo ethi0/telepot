@@ -12,7 +12,7 @@ def monitor():
     try:
         battery = psutil.sensors_battery()
         if battery is None:
-            print("Maybe the power is just [dis]connected. Battery is None == True." )
+            print("Maybe the power is just [dis]connected. Battery is None == True. If you have no battery - please exlude this check." )
             raise AttributeError
         else:
             print("I think it's good there:" + str(battery is None))
