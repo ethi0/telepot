@@ -47,3 +47,7 @@ def loadMonitor():
     else:
         result_load = ""
     return result_load
+
+
+def Scan():
+    return str(psutil.cpu_count())

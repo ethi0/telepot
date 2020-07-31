@@ -23,7 +23,8 @@ import Monitoring
 sys.path.append('./scanner')
 import Scanner
 sys.path.append('./selfmonitor')
-import SelfMonitorMicrocore
+import selfMonitorMicrocore
+import init
 
 memorythreshold = 85  # If memory usage more this %
 poll = 5  # seconds
@@ -35,6 +36,7 @@ xaxis = []
 settingmemth = []
 setpolling = []
 graphstart = datetime.now()
+sysinfo_path = "sysinfo.csv"
 
 stopmarkup = {'keyboard': [['Stop']]}
 hide_keyboard = {'hide_keyboard': True}
@@ -157,7 +159,8 @@ xx = 0
 for adminid in adminchatid:
     bot.sendMessage(adminid, "ALL SYSTEMS ARE ONLINE." + "\n" \
         + "Initializing first-time check...")
-SelfMonitorMicrocore.Reporter(bot, adminchatid)
+init.Scan(bot, adminchatid, sysinfo_path)
+selfMonitorMicrocore.Reporter(bot, adminchatid, sysinfo_path)
 # Keep the program running.
 while 1:
     if tr == poll:
@@ -165,7 +168,7 @@ while 1:
         timenow = datetime.now()
         memck = psutil.virtual_memory()
         mempercent = memck.percent
-        SelfMonitorMicrocore.Reporter(bot, adminchatid)
+        selfMonitorMicrocore.Reporter(bot, adminchatid, sysinfo_path)
         if len(memlist) > 300:
             memq = collections.deque(memlist)
             memq.append(mempercent)

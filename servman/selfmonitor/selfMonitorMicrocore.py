@@ -1,13 +1,22 @@
-import Battery
-import Cpu
-import Disk
+import battery
+import cpu
+import disk
+import csv
 
 
-def Reporter(bot, adminchatid):
-    battery_report = Battery.monitor()
-    cpu_load_report = Cpu.loadMonitor()
-    cpu_heat_report = Cpu.heatMonitor()
-    disk_report = Disk.monitor()
+def Reporter(bot, adminchatid, sysinfo_path):
+    with open(sysinfo_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['BATTERY'] == '1':
+                print("Battery exists, continue...")
+                battery_report = battery.Monitor()
+            elif row['BATTERY'] == '0':
+                print("Battery doesn't exist, skipping.")
+
+    cpu_load_report = cpu.loadMonitor()
+    cpu_heat_report = cpu.heatMonitor()
+    disk_report = disk.Monitor()
     report_list = [battery_report, cpu_load_report, cpu_heat_report, disk_report]
     allow_report = 0
     for report in report_list:
