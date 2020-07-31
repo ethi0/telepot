@@ -13,7 +13,7 @@ def heatMonitor():
     global high_heat_flag
     global result_heat
     temperature = psutil.sensors_temperatures()
-    cputemp = temperature.get('coretemp')[0][1]
+    cputemp = list(temperature.values())[0][0][1]
     if float(cputemp) > 60.0 and high_heat_flag == 0:
         high_heat_flag = 1
         low_heat_flag = 0
