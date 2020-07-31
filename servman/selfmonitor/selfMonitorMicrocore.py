@@ -40,6 +40,21 @@ def eventReporter(bot, adminchatid, sysinfo_path):
 
 
 def statsReporter(bot, chat_id, sysinfo_path):
+    with open(sysinfo_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['BATTERY'] == '1':
+                print("Battery exists, continue...")
+                battery = psutil.sensors_battery()
+                battenergy = "Battery energy: %.2f percents" % battery.percent
+                battcharge = "Battery charging: " + str(battery.power_plugged)
+                batttime = "Battery time left: %.2f minutes" % (battery.secsleft / 60)
+            elif row['BATTERY'] == '0':
+                print("Battery doesn't exist, skipping.")
+                battenergy = ""
+                battcharge = ""
+                batttime = ""
+                
     memory = psutil.virtual_memory()
     disk = psutil.disk_usage('/')
     battery = psutil.sensors_battery()
@@ -58,9 +73,6 @@ def statsReporter(bot, chat_id, sysinfo_path):
         memory.available / 1000000000)
     memuseperc = "Used memory: " + str(memory.percent) + " %"
     diskused = "Disk used: " + str(disk.percent) + " %"
-    battenergy = "Battery energy: %.2f percents" % battery.percent
-    battcharge = "Battery charging: " + str(battery.power_plugged)
-    batttime = "Battery time left: %.2f minutes" % (battery.secsleft / 60)
     cpuperccurr = "CPU Load " + str(cpuperc.conjugate()) + " %"
     cpurfreqcurr = "CPU frequency: %.2f MHz" % cpufreq.current
     cputemp = "CPU Temperature " + str(temperature.get('coretemp')[0][1])
@@ -90,14 +102,14 @@ def statsReporter(bot, chat_id, sysinfo_path):
             memavail + "\n" + \
             memuseperc + "\n" + \
             diskused + "\n" + \
-            battenergy + "\n" + \
-            battcharge + "\n" + \
-            batttime + "\n" + \
             loadavgcurr + "\n" + \
             cpuperccurr + "\n" + \
             cpurfreqcurr + "\n" + \
             cputemp + "\n" + \
             fanscurr + "\n" + \
             swapused + "\n\n" + \
+            battenergy + "\n" + \
+            battcharge + "\n" + \
+            batttime + "\n" + \
             pidsreply
     bot.sendMessage(chat_id, reply, disable_web_page_preview=True)
