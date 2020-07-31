@@ -105,9 +105,9 @@ def statsReporter(bot, chat_id, sysinfo_path):
             cpuperccurr + "\n" + \
             cpurfreqcurr + "\n" + \
             cputemp + "\n" + \
-            swapused + "\n\n" + \
+            swapused + "\n" + \
             battenergy + "\n" + \
             battcharge + "\n" + \
-            batttime + "\n" + \
+            batttime + "\n\n" + \
             pidsreply
     bot.sendMessage(chat_id, reply, disable_web_page_preview=True)
