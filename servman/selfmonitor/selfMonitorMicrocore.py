@@ -75,7 +75,7 @@ def statsReporter(bot, chat_id, sysinfo_path):
     diskused = "Disk used: " + str(disk.percent) + " %"
     cpuperccurr = "CPU Load " + str(cpuperc.conjugate()) + " %"
     cpurfreqcurr = "CPU frequency: %.2f MHz" % cpufreq.current
-    cputemp = "CPU Temperature " + str(temperature.get('coretemp')[0][1])
+    cputemp = "CPU Temperature " + str(list(temperature.values())[0][0][1])
     fanscurr = "FAN RPM " + str(fans.get('dell_smm')[0][1])
     swapused = "SWAP used " + str(swap.used / 1024 / 1024) + " MB"
     loadavgcurr = "Load AVG " + str(loadavg)
