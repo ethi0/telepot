@@ -4,5 +4,6 @@ servman/__pycache__
 servman/monitor/__pycache__
 servman/scanner/__pycache__
 servman/selfmonitor/__pycache__
+servman/sysinfo.csv
 .env
 shared/etc/ssh/*

@@ -7,3 +7,4 @@ Plans:
 2. Noise and motion detection.
 3. Integrating port/service scanning features.
 4. Integrating search engine.
+5. Integrating with Slack.

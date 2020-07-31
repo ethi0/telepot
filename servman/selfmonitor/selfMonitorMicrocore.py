@@ -13,6 +13,7 @@ def Reporter(bot, adminchatid, sysinfo_path):
                 battery_report = battery.Monitor()
             elif row['BATTERY'] == '0':
                 print("Battery doesn't exist, skipping.")
+                battery_report = ""
 
     cpu_load_report = cpu.loadMonitor()
     cpu_heat_report = cpu.heatMonitor()
