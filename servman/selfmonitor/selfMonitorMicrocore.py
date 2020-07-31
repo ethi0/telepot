@@ -5,7 +5,7 @@ import csv
 import operator
 import psutil
 import os
-import datetime
+from datetime import datetime
 
 def eventReporter(bot, adminchatid, sysinfo_path):
     with open(sysinfo_path, newline='') as csvfile:
