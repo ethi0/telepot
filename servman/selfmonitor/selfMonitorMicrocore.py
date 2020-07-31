@@ -76,7 +76,6 @@ def statsReporter(bot, chat_id, sysinfo_path):
     cpuperccurr = "CPU Load " + str(cpuperc.conjugate()) + " %"
     cpurfreqcurr = "CPU frequency: %.2f MHz" % cpufreq.current
     cputemp = "CPU Temperature " + str(list(temperature.values())[0][0][1])
-    fanscurr = "FAN RPM " + str(list(fans.values())[0][1])
     swapused = "SWAP used " + str(swap.used / 1024 / 1024) + " MB"
     loadavgcurr = "Load AVG " + str(loadavg)
     pids = psutil.pids()
@@ -106,7 +105,6 @@ def statsReporter(bot, chat_id, sysinfo_path):
             cpuperccurr + "\n" + \
             cpurfreqcurr + "\n" + \
             cputemp + "\n" + \
-            fanscurr + "\n" + \
             swapused + "\n\n" + \
             battenergy + "\n" + \
             battcharge + "\n" + \
