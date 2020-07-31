@@ -64,7 +64,7 @@ class YourBot(telepot.Bot):
             if content_type == 'text':
                 if msg['text'] == '/stats' and chat_id not in shellexecution:
                     bot.sendChatAction(chat_id, 'typing')
-                    selfMonitorMicrocore.statsReporter(bot, chatid, sysinfo_path)
+                    selfMonitorMicrocore.statsReporter(bot, chat_id, sysinfo_path)
                 elif msg['text'] == "Stop":
                     clearall(chat_id)
                     bot.sendMessage(chat_id, "All operations stopped.", reply_markup=hide_keyboard)
