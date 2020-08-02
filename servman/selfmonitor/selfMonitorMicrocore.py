@@ -7,6 +7,9 @@ import psutil
 import os
 from datetime import datetime
 
+
+
+
 def eventReporter(bot, adminchatid, sysinfo_path):
     with open(sysinfo_path, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -40,27 +43,35 @@ def eventReporter(bot, adminchatid, sysinfo_path):
 
 
 def statsReporter(bot, chat_id, sysinfo_path):
+    items_list = []
+    i = 0
+    #global fans
+    #global fanspeed
+    #global battery
     with open(sysinfo_path, newline='') as csvfile:
-        reader = csv.DictReader(csvfile)
+        reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
-            if row['BATTERY'] == '1':
-                print("Battery exists, continue...")
-                battery = psutil.sensors_battery()
-                battenergy = "Battery energy: %.2f percents" % battery.percent
-                battcharge = "Battery charging: " + str(battery.power_plugged)
-                batttime = "Battery time left: %.2f minutes" % (battery.secsleft / 60)
-            elif row['BATTERY'] == '0':
-                print("Battery doesn't exist, skipping.")
-                battenergy = ""
-                battcharge = ""
-                batttime = ""
-                
+            items_list.append(row)
+        while i <= len(items_list):
+            if items_list[1][i] == '1':
+                print(items_list[0][i] + " exists, continue check...")
+                if items_list[0][i] == 'BATTERY':
+                    battery = psutil.sensors_battery()
+                    battenergy = "Battery energy: %.2f percents" % battery.percent
+                    battcharge = "Battery charging: " + str(battery.power_plugged)
+                    batttime = "Battery time left: %.2f minutes" % (battery.secsleft / 60)
+                elif items_list[0][i] == 'FANS':
+                    fans = psutil.sensors_fans()
+                    fanspeed = "FAN: %.0f RPM" % list(fans.values())[0][0][1]
+            elif items_list[1][i] == '0':
+                print(items_list[0][i] + " doesn't exist, skipping.")
+            elif items_list[1][i] != '1' and items_list[1][i] != '0':
+                print(str(items_list[0][i]) + " is not being checked for existence: " + str(items_list[1][i]))
+            i += 1
     memory = psutil.virtual_memory()
     disk = psutil.disk_usage('/')
-    battery = psutil.sensors_battery()
     cpufreq = psutil.cpu_freq()
     cpuperc = psutil.cpu_percent()
-    fans = psutil.sensors_fans()
     temperature = psutil.sensors_temperatures()
     swap = psutil.swap_memory()
     loadavg = os.getloadavg()
@@ -105,6 +116,7 @@ def statsReporter(bot, chat_id, sysinfo_path):
             cpuperccurr + "\n" + \
             cpurfreqcurr + "\n" + \
             cputemp + "\n" + \
+            fanspeed + "\n" + \
             swapused + "\n" + \
             battenergy + "\n" + \
             battcharge + "\n" + \
