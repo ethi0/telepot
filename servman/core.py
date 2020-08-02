@@ -17,14 +17,10 @@ import os
 # from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardHide, ForceReply
 # from telepot.namedtuple import InlineKeyboardMarkup, InlineKeyboardButton
 # from telepot.namedtuple import InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent
-sys.path.append('./monitor')
-import ManageMonItem
-import Monitoring
-sys.path.append('./scanner')
-import Scanner
-sys.path.append('./selfmonitor')
+import netManageMonItem
+import netmonitoring
+import netscanner
 import selfMonitorMicrocore
-import init
 
 memorythreshold = 85  # If memory usage more this %
 poll = 5  # seconds
@@ -36,7 +32,6 @@ xaxis = []
 settingmemth = []
 setpolling = []
 graphstart = datetime.now()
-sysinfo_path = "sysinfo.csv"
 
 stopmarkup = {'keyboard': [['Stop']]}
 hide_keyboard = {'hide_keyboard': True}
@@ -72,17 +67,17 @@ class YourBot(telepot.Bot):
                     bot.sendMessage(chat_id, "Send me a shell command to execute", reply_markup=stopmarkup)
                     shellexecution.append(chat_id)
                 elif msg['text'] == "/madd" and chat_id not in shellexecution:
-                    ManageMonItem.addMonitorItem(bot, chat_id)
+                    netManageMonItem.addMonitorItem(bot, chat_id)
                 elif msg['text'] == "/mdel" and chat_id not in shellexecution:
-                    ManageMonItem.deleteMonitorItem(bot, chat_id)
+                    netManageMonItem.deleteMonitorItem(bot, chat_id)
                 elif msg['text'] == "/medit" and chat_id not in shellexecution:
-                    ManageMonItem.editMonitorItem(bot, chat_id)
+                    netManageMonItem.editMonitorItem(bot, chat_id)
                 elif msg['text'] == "/mstart" and chat_id not in shellexecution:
-                    Monitoring.startMonitorItems(bot, chat_id)
+                    netmonitoring.startMonitorItems(bot, chat_id)
                 elif msg['text'] == "/mstop" and chat_id not in shellexecution:
-                    Monitoring.stopMonitorItems(bot, chat_id)
+                    netmonitoring.stopMonitorItems(bot, chat_id)
                 elif msg['text'] == "/sscan" and chat_id not in shellexecution:
-                    Scanner.startScanItem(bot, chat_id)
+                    netscanner.startScanItem(bot, chat_id)
                 elif chat_id in shellexecution:
                     bot.sendChatAction(chat_id, 'typing')
                     p = Popen(msg['text'], shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
@@ -102,7 +97,7 @@ xx = 0
 for adminid in adminchatid:
     bot.sendMessage(adminid, "ALL SYSTEMS ARE ONLINE." + "\n" \
         + "Initializing first-time check...")
-init.Scan(bot, adminchatid, sysinfo_path)
+selfMonitorMicrocore.Scan(sysinfo_path)
 selfMonitorMicrocore.eventReporter(bot, adminchatid, sysinfo_path)
 # Keep the program running.
 while 1:

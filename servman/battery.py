@@ -13,14 +13,14 @@ def Monitor():
     try:
         battery = psutil.sensors_battery()
         if battery is None:
-            print("Maybe the power is just [dis]connected. Battery is None == True. If you have no battery - please exlude this check." )
+            print("Maybe the power is just [dis]connected." )
             raise AttributeError
         else:
-            print("I think it's good there:" + str(battery is None))
+            print("Battery is checked without problems.")
     except AttributeError:
         time.sleep(5)
         battery = psutil.sensors_battery()
-        print("Action after catching Exception: " + str(battery is None))
+        print("Battery is rechecked.")
 
     batttime = battery.secsleft / 60
     battenergy = battery.percent
