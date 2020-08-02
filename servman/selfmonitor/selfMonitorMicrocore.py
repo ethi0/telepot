@@ -45,9 +45,11 @@ def eventReporter(bot, adminchatid, sysinfo_path):
 def statsReporter(bot, chat_id, sysinfo_path):
     items_list = []
     i = 0
-    #global fans
-    #global fanspeed
-    #global battery
+
+    battenergy = ""
+    battcharge = ""
+    batttime = ""
+    fanspeed = ""
     with open(sysinfo_path, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
