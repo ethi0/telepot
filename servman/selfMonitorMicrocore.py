@@ -22,9 +22,17 @@ def eventReporter(bot, adminchatid, sysinfo_path):
             elif row['BATTERY'] == '0':
                 print("Battery doesn't exist, skipping.")
                 battery_report = ""
+    with open(sysinfo_path, newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row['TEMPERATURES'] == '1':
+                print("Temperature sensor exists, continue...")
+                cpu_heat_report = cpu.heatMonitor()
+            elif row['TEMPERATURES'] == '0':
+                print("Temperature sensor doesn't exist, skipping.")
+                cpu_heat_report = ""
 
     cpu_load_report = cpu.loadMonitor()
-    cpu_heat_report = cpu.heatMonitor()
     disk_report = disk.Monitor()
     report_list = [battery_report, cpu_load_report,
                    cpu_heat_report, disk_report]
@@ -51,6 +59,7 @@ def statsReporter(bot, chat_id, sysinfo_path):
     battcharge = ""
     batttime = ""
     fanspeed = ""
+    cputemp = ""
     with open(sysinfo_path, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
         for row in reader:
@@ -66,11 +75,14 @@ def statsReporter(bot, chat_id, sysinfo_path):
                 elif items_list[0][i] == 'FANS':
                     fans = psutil.sensors_fans()
                     fanspeed = "FAN: %.0f RPM" % list(fans.values())[0][0][1]
+                elif items_list[0][i] == 'TEMPERATURES':
+                    cputemp = "CPU Temperature " + str(list(temperature.values())[0][0][1])    
             elif items_list[1][i] == '0':
                 print(items_list[0][i] + " doesn't exist, skipping.")
             elif items_list[1][i] != '1' and items_list[1][i] != '0':
                 print(str(items_list[0][i]) + " is not being checked for existence: " + str(items_list[1][i]))
             i += 1
+
     memory = psutil.virtual_memory()
     disk = psutil.disk_usage('/')
     cpufreq = psutil.cpu_freq()
@@ -89,7 +101,7 @@ def statsReporter(bot, chat_id, sysinfo_path):
     diskused = "Disk used: " + str(disk.percent) + " %"
     cpuperccurr = "CPU Load " + str(cpuperc.conjugate()) + " %"
     cpurfreqcurr = "CPU frequency: %.2f MHz" % cpufreq.current
-    cputemp = "CPU Temperature " + str(list(temperature.values())[0][0][1])
+   #cputemp = "CPU Temperature " + str(list(temperature.values())[0][0][1])
     swapused = "SWAP used " + str(swap.used / 1024 / 1024) + " MB"
     loadavgcurr = "Load AVG " + str(loadavg)
     pids = psutil.pids()
