@@ -132,12 +132,13 @@ def statsReporter(bot, chat_id, sysinfo_path):
 def Scan(sysinfo_path):
     if path.exists(sysinfo_path) is False:
         battery_report = battery.Scan()
-        cpu_report = cpu.Scan()
+        cpu_report = cpu.ScanCpuCount()
         fans_report = fans.Scan()
+        temp_report = cpu.ScanTempSensors()
         with open(sysinfo_path, 'w', newline='') as csvfile:
-            fieldnames = ['BATTERY', 'CPU', 'FANS']
+            fieldnames = ['BATTERY', 'CPU', 'FANS', 'TEMPERATURES']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            writer.writerow({'BATTERY': battery_report, 'CPU': cpu_report, 'FANS': fans_report})
+            writer.writerow({'BATTERY': battery_report, 'CPU': cpu_report, 'FANS': fans_report, 'TEMPERATURES': temp_report})
     else:
         print("Skipping scan...")

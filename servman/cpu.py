@@ -49,5 +49,17 @@ def loadMonitor():
     return result_load
 
 
-def Scan():
+def ScanCpuCount():
     return str(psutil.cpu_count())
+
+
+def ScanTempSensors():
+    temp = psutil.sensors_temperatures()
+    if temp != {}:
+        print("SCAN SAYS: Temperature " + str(temp))
+        return "1"
+    elif temp == {}:
+        print("SCAN SAYS2: Temperature " + str(temp))
+        return "0"
+    else:
+        return "TEMPERATURE, UNDEFINED"
